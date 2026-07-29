@@ -1,0 +1,77 @@
+{
+  "pipeline_name": "AI Financial Purchase Advisor Prediction Pipeline",
+  "pipeline_version": "1.0.0",
+  "python_version": "3.12.10",
+  "xgboost_version": "1.7.6",
+  "platform": "Windows",
+  "generated_at": "2026-07-16 18:32:45",
+  "features": {
+    "raw_input": [
+      "total_income",
+      "total_fixed_expense",
+      "total_variable_expense",
+      "current_savings",
+      "emergency_fund",
+      "emergency_usage_limit",
+      "purchase_price"
+    ],
+    "engineered": [
+      "total_expense",
+      "remaining_balance",
+      "disposable_income",
+      "emergency_available",
+      "available_money",
+      "expense_ratio",
+      "savings_ratio",
+      "debt_ratio",
+      "purchase_to_income",
+      "purchase_to_remaining",
+      "purchase_to_savings",
+      "purchase_to_emergency",
+      "purchase_ratio",
+      "leftover_after_purchase",
+      "financial_cushion",
+      "purchase_burden",
+      "emergency_usage_needed",
+      "financial_health_score"
+    ],
+    "model_input": [
+      "emergency_usage_needed",
+      "purchase_ratio",
+      "purchase_to_savings",
+      "purchase_to_remaining",
+      "purchase_burden",
+      "leftover_after_purchase",
+      "purchase_to_emergency",
+      "financial_cushion",
+      "savings_ratio",
+      "emergency_usage_limit"
+    ]
+  },
+  "models": {
+    "recommendation": {
+      "file": "recommendation_model_optimized.pkl",
+      "classes": [
+        "NO",
+        "YES"
+      ]
+    },
+    "pattern": {
+      "file": "pattern_model_optimized.pkl",
+      "classes": [
+        "P1",
+        "P2",
+        "P3",
+        "P4"
+      ]
+    }
+  },
+  "prediction_logic": "Recommendation -> YES -> Pattern Model -> Pattern\nRecommendation -> NO -> Pattern = P6 (Not Affordable)",
+  "emergency_usage_limit_allowed": [
+    30,
+    40,
+    50,
+    60,
+    70
+  ]
+}

@@ -1,0 +1,85 @@
+{
+  "model_version": "2.0.0-optimized",
+  "training_date": "2026-07-16 18:13:55",
+  "features": [
+    "emergency_usage_needed",
+    "purchase_ratio",
+    "purchase_to_savings",
+    "purchase_to_remaining",
+    "purchase_burden",
+    "leftover_after_purchase",
+    "purchase_to_emergency",
+    "financial_cushion",
+    "savings_ratio",
+    "emergency_usage_limit"
+  ],
+  "feature_order": [
+    "emergency_usage_needed",
+    "purchase_ratio",
+    "purchase_to_savings",
+    "purchase_to_remaining",
+    "purchase_burden",
+    "leftover_after_purchase",
+    "purchase_to_emergency",
+    "financial_cushion",
+    "savings_ratio",
+    "emergency_usage_limit"
+  ],
+  "feature_count": 10,
+  "target": "pattern_id",
+  "target_mapping": {
+    "P1": 0,
+    "P2": 1,
+    "P3": 2,
+    "P4": 3
+  },
+  "num_classes": 4,
+  "classes": [
+    "P1",
+    "P2",
+    "P3",
+    "P4"
+  ],
+  "model_type": "XGBoost Multi-Class (Optimized)",
+  "best_params": {
+    "n_estimators": 1000,
+    "learning_rate": 0.011208677376142971,
+    "max_depth": 4,
+    "min_child_weight": 4,
+    "gamma": 0.4654244994256224,
+    "subsample": 0.9989879313923893,
+    "colsample_bytree": 0.6604880197116956,
+    "reg_alpha": 4.249666035611636,
+    "reg_lambda": 6.19330480889154,
+    "max_delta_step": 0
+  },
+  "objective": "multi:softprob",
+  "python_version": "3.12.10",
+  "xgboost_version": "1.7.6",
+  "test_metrics": {
+    "accuracy": 0.9971,
+    "macro_precision": 0.9975,
+    "macro_recall": 0.9968,
+    "macro_f1": 0.9972,
+    "weighted_f1": 0.9971,
+    "balanced_accuracy": 0.9968,
+    "matthews_corrcoef": 0.9961,
+    "log_loss": 0.0186
+  },
+  "cross_validation": {
+    "accuracy_mean": 0.9999,
+    "accuracy_std": 0.0003,
+    "macro_precision_mean": 0.9999,
+    "macro_precision_std": 0.0003,
+    "macro_recall_mean": 0.9998,
+    "macro_recall_std": 0.0004,
+    "macro_f1_mean": 0.9998,
+    "macro_f1_std": 0.0003,
+    "log_loss_mean": 0.0069,
+    "log_loss_std": 0.0008,
+    "balanced_accuracy_mean": 0.9998,
+    "balanced_accuracy_std": 0.0004,
+    "mean_accuracy": 0.9999
+  },
+  "phase": "10"
+}

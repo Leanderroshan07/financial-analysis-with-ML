@@ -1,0 +1,14 @@
+{
+  "name": "moneyyy",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently -n ml,backend,frontend -c yellow,green,cyan \"cd fastapi && .\\app\\venv\\Scripts\\uvicorn app.main:app --reload --port 8000\" \"cd backend && npm run dev\" \"cd frontend && npm run dev\"",
+    "dev:ml": "cd fastapi && .\\app\\venv\\Scripts\\uvicorn app.main:app --reload --port 8000",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:frontend": "cd frontend && npm run dev"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}

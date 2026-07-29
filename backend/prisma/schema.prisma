@@ -1,0 +1,298 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  name      String?
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  oauthAccounts       OAuthAccount[]
+  sessions            Session[]
+  financialProfile    FinancialProfile?
+  incomes             Income[]
+  categories          Category[]
+  transactions        Transaction[]
+  savings             Savings?
+  purchaseHistories   PurchaseHistory[]
+  accounts            Account[]
+  tasks               Task[]
+  goals               Goal[]
+  emis                Emi[]
+  subscriptions       Subscription[]
+}
+
+model OAuthAccount {
+  id                String  @id @default(uuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([provider, providerAccountId])
+}
+
+model Account {
+  id               String   @id @default(uuid())
+  userId           String
+  name             String
+  type             String   @default("Cash")
+  initialBalance   Float    @default(0)
+  currentBalance   Float    @default(0)
+  spendingThreshold Float?
+  parentId         String?
+  isSubAccount     Boolean  @default(false)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  user         User          @relation(fields: [userId], references: [id])
+  parent       Account?      @relation("AccountHierarchy", fields: [parentId], references: [id])
+  subAccounts  Account[]     @relation("AccountHierarchy")
+  transactions Transaction[]
+  emis         Emi[]
+  subscriptions Subscription[]
+
+  @@index([userId])
+  @@index([parentId])
+}
+
+model Session {
+  id           String   @id @default(uuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id])
+}
+
+model FinancialProfile {
+  id                  String   @id @default(uuid())
+  userId              String   @unique
+  emergencyFund       Float    @default(0)
+  emergencyUsageLimit Int      @default(50)
+  currency            String   @default("USD")
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model Income {
+  id           String   @id @default(uuid())
+  userId       String
+  title        String
+  amount       Float
+  frequency    String   @default("MONTHLY")
+  receivedDate DateTime @default(now())
+  notes        String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([receivedDate])
+}
+
+model Category {
+  id         String   @id @default(uuid())
+  userId     String
+  name       String
+  type       String   @default("EXPENSE")
+  isEssential Boolean @default(false)
+  parentId   String?
+  createdAt  DateTime @default(now())
+
+  user          User          @relation(fields: [userId], references: [id])
+  parent        Category?     @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  subCategories Category[]    @relation("CategoryHierarchy")
+  transactions  Transaction[]
+  tasks         Task[]
+  goals         Goal[]
+
+  @@unique([userId, name])
+  @@index([userId])
+  @@index([parentId])
+}
+
+model Transaction {
+  id                String    @id @default(uuid())
+  userId            String
+  accountId         String?
+  categoryId        String?
+  amount            Float
+  transactionType   String    @default("EXPENSE")
+  transactionNature String    @default("VARIABLE")
+  date              DateTime  @default(now())
+  description       String?
+  goalId            String?
+  taskId            String?
+  splits            String?
+  recurringId       String?
+  recurringFrequency String?
+  recurringNextDate DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  user     User      @relation(fields: [userId], references: [id])
+  account  Account?  @relation(fields: [accountId], references: [id])
+  category Category? @relation(fields: [categoryId], references: [id])
+  goal     Goal?     @relation(fields: [goalId], references: [id])
+
+  @@index([userId])
+  @@index([date])
+  @@index([transactionType])
+  @@index([accountId])
+  @@index([categoryId])
+}
+
+model Savings {
+  id             String   @id @default(uuid())
+  userId         String   @unique
+  currentSavings Float    @default(0)
+  updatedAt      DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model PurchaseHistory {
+  id             String   @id @default(uuid())
+  userId         String
+  purchaseName   String?
+  purchasePrice  Float
+  recommendation String
+  pattern        String
+  confidenceRec  Float
+  confidencePat  Float
+  createdAt      DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model Emi {
+  id               String   @id @default(uuid())
+  userId           String
+  name             String
+  totalAmount      Float
+  monthlyEmi       Float
+  remainingAmount  Float
+  interestRate     Float?
+  tenureMonths     Int?
+  startDate        DateTime
+  endDate          DateTime
+  dueDay           Int?
+  downPayment      Float?
+  processingFee    Float?
+  prepaymentAmount Float?
+  loanAccountNumber String?
+  notes            String?
+  category         String?
+  lender           String?
+  accountId        String?
+  lastPaidDate     DateTime?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  user    User     @relation(fields: [userId], references: [id])
+  account Account? @relation(fields: [accountId], references: [id])
+
+  @@index([userId])
+}
+
+model Subscription {
+  id            String    @id @default(uuid())
+  userId        String
+  name          String
+  amount        Float
+  billingPeriod String    @default("MONTHLY")
+  startDate     DateTime
+  endDate       DateTime?
+  lastPaidDate  DateTime?
+  skipUntil     DateTime?
+  category      String?
+  accountId     String?
+  active        Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  user    User     @relation(fields: [userId], references: [id])
+  account Account? @relation(fields: [accountId], references: [id])
+
+  @@index([userId])
+}
+
+model Task {
+  id             String    @id @default(uuid())
+  userId         String
+  title          String
+  description    String?
+  priority       String    @default("Medium")
+  dueDate        DateTime?
+  completed      Boolean   @default(false)
+  categoryId     String?
+  isGoal         Boolean   @default(false)
+  targetAmount   Float?
+  goalPeriodStart DateTime?
+  goalPeriodEnd   DateTime?
+  sortOrder      Int       @default(0)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  user     User      @relation(fields: [userId], references: [id])
+  category Category? @relation(fields: [categoryId], references: [id])
+  subtasks Subtask[]
+  goal     Goal?
+
+  @@index([userId])
+}
+
+model Subtask {
+  id        String  @id @default(uuid())
+  taskId    String
+  title     String
+  completed Boolean @default(false)
+  sortOrder Int     @default(0)
+
+  task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  @@index([taskId])
+}
+
+model Goal {
+  id          String   @id @default(uuid())
+  userId      String
+  taskId      String   @unique
+  targetAmount Float?
+  periodStart DateTime?
+  periodEnd   DateTime?
+  categoryId  String?
+  progress    Float    @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user         User          @relation(fields: [userId], references: [id])
+  task         Task          @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  category     Category?     @relation(fields: [categoryId], references: [id])
+  transactions Transaction[]
+
+  @@index([userId])
+}

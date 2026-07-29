@@ -1,0 +1,78 @@
+{
+  "model_version": "2.0.0-optimized",
+  "training_date": "2026-07-16 18:02:57",
+  "features": [
+    "emergency_usage_needed",
+    "purchase_ratio",
+    "purchase_to_savings",
+    "purchase_to_remaining",
+    "purchase_burden",
+    "leftover_after_purchase",
+    "purchase_to_emergency",
+    "financial_cushion",
+    "savings_ratio",
+    "emergency_usage_limit"
+  ],
+  "feature_order": [
+    "emergency_usage_needed",
+    "purchase_ratio",
+    "purchase_to_savings",
+    "purchase_to_remaining",
+    "purchase_burden",
+    "leftover_after_purchase",
+    "purchase_to_emergency",
+    "financial_cushion",
+    "savings_ratio",
+    "emergency_usage_limit"
+  ],
+  "feature_count": 10,
+  "target": "recommendation",
+  "target_mapping": {
+    "NO": 0,
+    "YES": 1
+  },
+  "model_type": "XGBoost (Optimized)",
+  "best_params": {
+    "n_estimators": 58,
+    "learning_rate": 0.2,
+    "max_depth": 10,
+    "min_child_weight": 5,
+    "gamma": 0.5,
+    "subsample": 1.0,
+    "colsample_bytree": 0.7,
+    "reg_alpha": 0.1,
+    "reg_lambda": 1.0,
+    "max_delta_step": 3
+  },
+  "best_threshold": 0.5,
+  "scale_pos_weight": 0.4427,
+  "python_version": "3.12.10",
+  "xgboost_version": "1.7.6",
+  "test_metrics": {
+    "accuracy": 1.0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1_score": 1.0,
+    "roc_auc": 1.0,
+    "balanced_accuracy": 1.0,
+    "matthews_corrcoef": 1.0,
+    "log_loss": 0.0037,
+    "brier_score": 0.0003
+  },
+  "cross_validation": {
+    "accuracy_mean": 0.9988,
+    "accuracy_std": 0.0007,
+    "precision_mean": 1.0,
+    "precision_std": 0.0,
+    "recall_mean": 0.9983,
+    "recall_std": 0.001,
+    "f1_mean": 0.9991,
+    "f1_std": 0.0005,
+    "roc_auc_mean": 1.0,
+    "roc_auc_std": 0.0,
+    "balanced_accuracy_mean": 0.9991,
+    "balanced_accuracy_std": 0.0005,
+    "mean_accuracy": 0.9988
+  },
+  "phase": "8"
+}
