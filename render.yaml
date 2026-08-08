@@ -1,8 +1,62 @@
 services:
   - type: web
+    name: moneyyy-ml
+    env: python
+    rootDir: fastapi
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    autoDeploy: true
+    healthCheckPath: /api/v1/health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.0
+
+  - type: web
     name: moneyyy-backend
     env: node
     rootDir: backend
+    plan: free
     buildCommand: npm install && npm run build
-    startCommand: npm start
+    startCommand: node dist/server.js
     autoDeploy: true
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_VERSION
+        value: 20.11.0
+      - key: JWT_SECRET
+        sync: false
+      - key: JWT_EXPIRES_IN
+        value: 7d
+      - key: CORS_ORIGINS
+        value: https://moneyyy.vercel.app
+      - key: DATABASE_URL
+        fromDatabase:
+          name: moneyyy-db
+          property: connectionString
+      - key: AI_SERVICE_URL
+        fromService:
+          name: moneyyy-ml
+          type: web
+          property: host
+
+  - type: job
+    name: moneyyy-db-migrate
+    env: node
+    rootDir: backend
+    plan: free
+    buildCommand: npm install
+    startCommand: npx prisma migrate deploy
+    envVars:
+      - key: NODE_VERSION
+        value: 20.11.0
+      - key: DATABASE_URL
+        fromDatabase:
+          name: moneyyy-db
+          property: connectionString
+
+databases:
+  - name: moneyyy-db
+    plan: free
+    databaseName: moneyyy
+    user: moneyyy
