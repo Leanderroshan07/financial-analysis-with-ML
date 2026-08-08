@@ -1,18 +1,5 @@
 services:
   - type: web
-    name: moneyyy-ml
-    env: python
-    rootDir: fastapi
-    plan: free
-    buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
-    autoDeploy: true
-    healthCheckPath: /api/v1/health
-    envVars:
-      - key: PYTHON_VERSION
-        value: 3.12.0
-
-  - type: web
     name: moneyyy-backend
     env: node
     rootDir: backend
@@ -30,15 +17,12 @@ services:
         value: 7d
       - key: CORS_ORIGINS
         value: https://moneyyy.vercel.app
+      - key: AI_SERVICE_URL
+        value: https://financial-analysis-with-ml.onrender.com
       - key: DATABASE_URL
         fromDatabase:
           name: moneyyy-db
           property: connectionString
-      - key: AI_SERVICE_URL
-        fromService:
-          name: moneyyy-ml
-          type: web
-          property: host
 
   - type: job
     name: moneyyy-db-migrate
