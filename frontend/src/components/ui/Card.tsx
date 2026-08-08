@@ -1,13 +1,14 @@
-import type { ReactNode } from 'react'
+import type { CSSProperties, ReactNode } from 'react'
 import { cn } from '../../utils/cn'
 
 interface CardProps {
   className?: string
   children: ReactNode
   onClick?: () => void
+  style?: CSSProperties
 }
 
-export function Card({ className, children, onClick }: CardProps) {
+export function Card({ className, children, onClick, style }: CardProps) {
   return (
     <div
       className={cn(
@@ -16,6 +17,7 @@ export function Card({ className, children, onClick }: CardProps) {
         'hover:border-white/[0.12]',
         className
       )}
+      style={style}
       onClick={onClick}
     >
       {children}

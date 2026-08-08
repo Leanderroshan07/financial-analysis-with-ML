@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import { getCategories, createCategory, updateCategory, deleteCategory } from '../services/categories.service'
-import { Card, CardTitle } from '../components/ui/Card'
+import { Card } from '../components/ui/Card'
 import { Modal } from '../components/ui/Modal'
 import { Badge } from '../components/ui/Badge'
 import { LoadingSpinner } from '../components/ui/LoadingSpinner'
@@ -26,7 +26,7 @@ export function CategoriesPage() {
   })
 
   const createMutation = useMutation({
-    mutationFn: () => createCategory({ name: form.name, type: form.type, isEssential: form.isEssential, parentId: form.parentId || undefined }),
+    mutationFn: () => createCategory({ name: form.name, type: form.type as Category['type'], isEssential: form.isEssential, parentId: form.parentId || undefined }),
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['categories'] }); setShowCreate(false); setForm({ name: '', type: 'EXPENSE', isEssential: false, parentId: '' }); addToast('success', 'Category created') },
     onError: (err: any) => addToast('error', err?.response?.data?.error || 'Failed'),
   })

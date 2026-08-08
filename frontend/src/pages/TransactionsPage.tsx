@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { useState, useMemo } from 'react'
-import { getTransactions, createTransaction, updateTransaction, deleteTransaction, type TransactionAllocation } from '../services/data.service'
+import { useState } from 'react'
+import { getTransactions, createTransaction, updateTransaction, deleteTransaction, type TransactionAllocation, type TransactionDto } from '../services/data.service'
 import { getAccounts } from '../services/accounts.service'
 import { getCategories } from '../services/categories.service'
 import { Card, CardTitle } from '../components/ui/Card'
@@ -8,9 +8,9 @@ import { Modal } from '../components/ui/Modal'
 import { Badge } from '../components/ui/Badge'
 import { LoadingSpinner } from '../components/ui/LoadingSpinner'
 import { formatCurrency } from '../utils/formatters'
-import { Plus, Pencil, Trash2, TrendingUp, TrendingDown, Filter, ChevronDown, ChevronUp, PiggyBank, Shield, PlusCircle, X } from 'lucide-react'
+import { Plus, Pencil, Trash2, TrendingUp, TrendingDown, Filter, ChevronDown, ChevronUp, PlusCircle, X } from 'lucide-react'
 import { cn } from '../utils/cn'
-import type { Transaction, Category } from '../types'
+import type { Category } from '../types'
 import { useToast } from '../hooks/useToast'
 
 const accountTypeBadge: Record<string, string> = {
@@ -28,7 +28,7 @@ export function TransactionsPage() {
   const [categoryFilter, setCategoryFilter] = useState('')
   const [accountFilter, setAccountFilter] = useState('')
   const [showCreate, setShowCreate] = useState(false)
-  const [showEdit, setShowEdit] = useState<Transaction | null>(null)
+  const [showEdit, setShowEdit] = useState<TransactionDto | null>(null)
   const [showAllTx, setShowAllTx] = useState(false)
   const [form, setForm] = useState<any>({ amount: 0, transactionType: 'EXPENSE', description: '', categoryId: '', mainCategoryId: '', accountId: '', allocations: [] })
 
@@ -46,7 +46,7 @@ export function TransactionsPage() {
   })
 
   const updateMutation = useMutation({
-    mutationFn: () => updateTransaction(showEdit!.id, { ...form, transactionNature: 'VARIABLE', allocations: form.useSplit ? form.allocations : undefined }),
+    mutationFn: () => updateTransaction(showEdit!.id!, { ...form, transactionNature: 'VARIABLE', allocations: form.useSplit ? form.allocations : undefined }),
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['transactions'] }); setShowEdit(null); addToast('success', 'Transaction updated') },
     onError: () => addToast('error', 'Failed to update transaction'),
   })
@@ -56,8 +56,6 @@ export function TransactionsPage() {
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['transactions'] }); addToast('success', 'Transaction deleted') },
     onError: () => addToast('error', 'Failed to delete'),
   })
-
-  const mainAccounts = useMemo(() => (accounts || []).filter(a => !a.isSubAccount), [accounts])
 
   if (isLoading) return <LoadingSpinner />
 
@@ -81,7 +79,7 @@ export function TransactionsPage() {
   const selectedMain = form.mainCategoryId
   const subCatsOfSelected = selectedMain ? subCatsMap[selectedMain] || [] : []
 
-  const openEdit = (tx: Transaction) => {
+  const openEdit = (tx: TransactionDto) => {
     const cat = allCategories.find(c => c.id === tx.categoryId)
     const mainCategoryId = cat?.parentId || cat?.id || ''
     const hasSplits = tx.splits && tx.splits.length > 0
@@ -162,7 +160,7 @@ export function TransactionsPage() {
                         {tx.splits && tx.splits.length > 0 ? (
                           tx.splits.map((s, i) => (
                             <Badge key={i} variant={accountTypeBadge[(accounts || []).find(a => a.id === s.accountId)?.type || ''] as any || 'info'}>
-                              {(accounts || []).find(a => a.id === s.accountId)?.name || 'Unknown'}: {formatCurrency(s.amount)}
+                              {`${(accounts || []).find(a => a.id === s.accountId)?.name || 'Unknown'}: ${formatCurrency(s.amount)}`}
                             </Badge>
                           ))
                         ) : tx.account ? <Badge variant="info">{tx.account.name}</Badge> : null}
@@ -174,10 +172,10 @@ export function TransactionsPage() {
                       <p className={cn('text-sm font-bold font-data', tx.transactionType === 'INCOME' ? 'text-[#00E6A7]' : 'text-[#FF6B6B]')}>
                         {tx.transactionType === 'INCOME' ? '+' : '-'}{formatCurrency(tx.amount)}
                       </p>
-                      <p className="text-xs text-gray-500">{new Date(tx.date).toLocaleDateString()}</p>
+                      <p className="text-xs text-gray-500">{new Date(tx.date || '').toLocaleDateString()}</p>
                     </div>
                     <button onClick={() => openEdit(tx)} className="rounded-lg p-1.5 hover:bg-white/[0.06] transition-all duration-200"><Pencil className="h-4 w-4 text-gray-500" /></button>
-                    <button onClick={() => deleteMutation.mutate(tx.id)} className="rounded-lg p-1.5 hover:bg-[#FF6B6B]/10 transition-all duration-200"><Trash2 className="h-4 w-4 text-[#FF6B6B]/60" /></button>
+                    <button onClick={() => deleteMutation.mutate(tx.id!)} className="rounded-lg p-1.5 hover:bg-[#FF6B6B]/10 transition-all duration-200"><Trash2 className="h-4 w-4 text-[#FF6B6B]/60" /></button>
                   </div>
                 </div>
               ))}

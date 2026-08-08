@@ -3,12 +3,12 @@ import { useState, useMemo } from 'react'
 import { getEmis, createEmi, updateEmi, deleteEmi, getEmiSummary, payEmi, getAmortizationSchedule, getEmiPaymentHistory, addExtraEmiPayment } from '../services/emi.service'
 import { getSubscriptions, createSubscription, updateSubscription, deleteSubscription, getSubscriptionSummary, paySubscription, skipSubscription, unskipSubscription } from '../services/subscription.service'
 import { getAccounts } from '../services/accounts.service'
-import { Card, CardTitle } from '../components/ui/Card'
+import { Card } from '../components/ui/Card'
 import { Modal } from '../components/ui/Modal'
 import { Badge } from '../components/ui/Badge'
 import { LoadingSpinner } from '../components/ui/LoadingSpinner'
 import { formatCurrency } from '../utils/formatters'
-import { Plus, Pencil, Trash2, AlertTriangle, Banknote, Clock, TrendingDown, Repeat, Calendar, Info, ArrowRight, ChevronDown, ChevronUp, Filter } from 'lucide-react'
+import { Plus, Pencil, Trash2, AlertTriangle, Banknote, Clock, TrendingDown, Repeat, Calendar, Info, ChevronDown, ChevronUp, Filter } from 'lucide-react'
 import { cn } from '../utils/cn'
 import type { Emi, Subscription, AmortizationEntry, Transaction } from '../types'
 import { useToast } from '../hooks/useToast'
@@ -24,8 +24,6 @@ const ML_CONTRIBUTION = [
 export function FixedExpensesPage() {
   const queryClient = useQueryClient()
   const { addToast } = useToast()
-  const now = new Date()
-  const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
   const [filterMonth, setFilterMonth] = useState('')
   const [showMLInfo, setShowMLInfo] = useState(false)
   const [activeTab, setActiveTab] = useState<'emi' | 'subscription'>('emi')
@@ -70,7 +68,20 @@ export function FixedExpensesPage() {
   })
 
   const updateEmiMut = useMutation({
-    mutationFn: () => updateEmi(showEmiEdit!.id, emiForm),
+    mutationFn: () => updateEmi(showEmiEdit!.id, {
+      name: emiForm.name, totalAmount: emiForm.totalAmount,
+      monthlyEmi: emiForm.monthlyEmi || undefined,
+      interestRate: emiForm.interestRate ? Number(emiForm.interestRate) : null,
+      tenureMonths: emiForm.tenureMonths ? Number(emiForm.tenureMonths) : null,
+      startDate: emiForm.startDate,
+      dueDay: emiForm.dueDay ? Number(emiForm.dueDay) : null,
+      downPayment: emiForm.downPayment ? Number(emiForm.downPayment) : null,
+      processingFee: emiForm.processingFee ? Number(emiForm.processingFee) : null,
+      prepaymentAmount: emiForm.prepaymentAmount ? Number(emiForm.prepaymentAmount) : null,
+      loanAccountNumber: emiForm.loanAccountNumber || null,
+      notes: emiForm.notes || null, category: emiForm.category || null,
+      lender: emiForm.lender || null, accountId: emiForm.accountId || null,
+    }),
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['emis'] }); queryClient.invalidateQueries({ queryKey: ['emi-summary'] }); setShowEmiEdit(null); addToast('success', 'EMI updated') },
     onError: () => addToast('error', 'Failed'),
   })
@@ -85,7 +96,7 @@ export function FixedExpensesPage() {
     mutationFn: () => createSubscription({
       name: subForm.name, amount: subForm.amount,
       billingPeriod: subForm.billingPeriod,
-      startDate: subForm.startDate, billingMonths: subForm.billingMonths ? Number(subForm.billingMonths) : null,
+      startDate: subForm.startDate,
       category: subForm.category || null,
     }),
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['subscriptions'] }); queryClient.invalidateQueries({ queryKey: ['subscription-summary'] }); setShowSubCreate(false); resetSubForm(); addToast('success', 'Subscription added') },
@@ -93,7 +104,7 @@ export function FixedExpensesPage() {
   })
 
   const updateSubMut = useMutation({
-    mutationFn: () => updateSubscription(showSubEdit!.id, { ...subForm, billingMonths: subForm.billingMonths ? Number(subForm.billingMonths) : null }),
+    mutationFn: () => updateSubscription(showSubEdit!.id, { ...subForm }),
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['subscriptions'] }); queryClient.invalidateQueries({ queryKey: ['subscription-summary'] }); setShowSubEdit(null); addToast('success', 'Updated') },
     onError: () => addToast('error', 'Failed'),
   })
@@ -266,7 +277,7 @@ export function FixedExpensesPage() {
                     <p className={cn('text-sm font-bold', item.color)}>{item.label}</p>
                     <p className="text-xs text-gray-400 mt-1">Your input: <span className="font-mono text-gray-300">{item.field}</span></p>
                   </div>
-                  <Badge variant="neutral" className="shrink-0 ml-2">→ {item.mlField}</Badge>
+                  <Badge variant="neutral" className="shrink-0 ml-2">{`→ ${item.mlField}`}</Badge>
                 </div>
                 <p className="text-xs text-gray-300 mt-2">{item.effect}</p>
               </div>

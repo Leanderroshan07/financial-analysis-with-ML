@@ -7,9 +7,8 @@ import { updateFinancialProfile } from '../services/financial.service'
 import { Link } from 'react-router-dom'
 import { Card, CardTitle } from '../components/ui/Card'
 import { Badge } from '../components/ui/Badge'
-import { LoadingSpinner } from '../components/ui/LoadingSpinner'
 import { formatCurrency } from '../utils/formatters'
-import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Legend } from 'recharts'
+import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip } from 'recharts'
 import { Wallet, TrendingUp, TrendingDown, DollarSign, PiggyBank, Shield, AlertTriangle, CheckCircle2, Clock, ArrowRight, Circle, ChevronDown, ChevronUp, Settings } from 'lucide-react'
 import { cn } from '../utils/cn'
 
@@ -22,13 +21,6 @@ function getPriorityColor(priority: string) {
     case 'Low': return 'info'
     default: return 'neutral'
   }
-}
-
-function getProgressColor(pct: number) {
-  if (pct >= 75) return 'progress-gradient-green'
-  if (pct >= 50) return 'progress-gradient-blue'
-  if (pct >= 25) return 'progress-gradient-yellow'
-  return 'progress-gradient-red'
 }
 
 function DashboardSkeleton() {
@@ -233,7 +225,7 @@ export function Dashboard() {
             ) : (
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
-                  <Pie data={pieData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={70} innerRadius={35} label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`} strokeWidth={0}>
+                  <Pie data={pieData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={70} innerRadius={35} label={({ name, percent }) => `${name} ${((percent ?? 0) * 100).toFixed(0)}%`} strokeWidth={0}>
                     {pieData.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
                   </Pie>
                   <Tooltip content={<CustomTooltip />} />

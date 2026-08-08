@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import { getAccounts, createAccount, updateAccount, deleteAccount, transferMoney } from '../services/accounts.service'
-import { Card, CardTitle } from '../components/ui/Card'
+import { Card } from '../components/ui/Card'
 import { Modal } from '../components/ui/Modal'
 import { Badge } from '../components/ui/Badge'
 import { LoadingSpinner } from '../components/ui/LoadingSpinner'
@@ -52,7 +52,6 @@ export function AccountsPage() {
   const [showEdit, setShowEdit] = useState<FinanceAccount | null>(null)
   const [showTransfer, setShowTransfer] = useState(false)
   const [showDelete, setShowDelete] = useState<FinanceAccount | null>(null)
-  const [parentFilter, setParentFilter] = useState('')
   const [expanded, setExpanded] = useState<Record<string, boolean>>({})
   const [form, setForm] = useState({ name: '', type: 'Other' as string, initialBalance: 0, spendingThreshold: '', parentId: '' })
   const [transfer, setTransfer] = useState({ fromAccountId: '', toAccountId: '', amount: 0, description: '' })
@@ -61,7 +60,7 @@ export function AccountsPage() {
 
   const createMutation = useMutation({
     mutationFn: () => createAccount({
-      name: form.name, type: form.parentId ? undefined : form.type,
+      name: form.name, type: form.parentId ? undefined : (form.type as FinanceAccount['type']),
       initialBalance: form.initialBalance,
       spendingThreshold: form.spendingThreshold ? Number(form.spendingThreshold) : null,
       parentId: form.parentId || undefined,
@@ -71,7 +70,7 @@ export function AccountsPage() {
   })
 
   const updateMutation = useMutation({
-    mutationFn: () => updateAccount(showEdit!.id, { name: form.name, type: form.type, spendingThreshold: form.spendingThreshold ? Number(form.spendingThreshold) : null }),
+    mutationFn: () => updateAccount(showEdit!.id, { name: form.name, type: form.type as FinanceAccount['type'], spendingThreshold: form.spendingThreshold ? Number(form.spendingThreshold) : null }),
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['accounts'] }); setShowEdit(null); addToast('success', 'Account updated') },
     onError: () => addToast('error', 'Failed to update account'),
   })

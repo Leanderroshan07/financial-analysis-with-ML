@@ -47,7 +47,7 @@ export function FinancialCharts({ profile }: Props) {
         <div className="h-[280px] mt-4">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
-              <Pie data={expenseData} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={60} outerRadius={90} paddingAngle={2} stroke="none" label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}>
+              <Pie data={expenseData} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={60} outerRadius={90} paddingAngle={2} stroke="none" label={({ name, percent }) => `${name} ${((percent ?? 0) * 100).toFixed(0)}%`}>
                 {expenseData.map((_, i) => (
                   <Cell key={i} fill={COLORS[i % COLORS.length]} className="drop-shadow-sm hover:opacity-80 transition-opacity" />
                 ))}

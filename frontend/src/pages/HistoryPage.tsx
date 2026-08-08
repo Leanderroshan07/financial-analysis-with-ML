@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { getHistory } from '../services/purchase.service'
 import { PredictionHistoryTable } from '../components/PredictionHistoryTable'
-import { Card, CardTitle } from '../components/ui/Card'
+import { Card } from '../components/ui/Card'
 import { Clock, BarChart3 } from 'lucide-react'
 
 export function HistoryPage() {
