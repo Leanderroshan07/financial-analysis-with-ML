@@ -17,7 +17,7 @@ services:
       - key: JWT_EXPIRES_IN
         value: 7d
       - key: CORS_ORIGINS
-        value: https://moneyyy.vercel.app
+        value: https://moneyyy.vercel.app,https://frontend-upload-smoky.vercel.app
       - key: AI_SERVICE_URL
         value: https://financial-analysis-with-ml.onrender.com
       - key: DATABASE_URL

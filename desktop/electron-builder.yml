@@ -1,0 +1,25 @@
+appId: com.moneyyy.app
+productName: Moneyyy
+directories:
+  buildResources: build
+  output: dist
+files:
+  - out/**/*
+  - package.json
+extraResources:
+  - from: ../frontend/dist
+    to: renderer
+    filter:
+      - "**/*"
+win:
+  target:
+    - target: nsis
+      arch: [x64]
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  shortcutName: Moneyyy
+electronLanguages:
+  - en-US

@@ -12,3 +12,6 @@ coverage/
 .vscode/
 *.local
 archive/
+desktop/out/
+desktop/dist/
+desktop/node_modules/

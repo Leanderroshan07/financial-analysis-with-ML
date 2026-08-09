@@ -52,6 +52,37 @@ npm install
 npm run dev
 ```
 
+## Desktop App (Electron)
+
+The project includes an Electron desktop wrapper (`desktop/`) that packages the React SPA and connects it to the hosted backend + ML services (internet connection required).
+
+### Dev mode (hot reload)
+
+```bash
+npm install               # root deps
+cd desktop && npm install # electron + electron-vite
+npm run desktop:dev       # from repo root: starts Vite + Electron window
+```
+
+### Package a Windows installer
+
+Make sure `frontend/dist` is built (the script does it automatically):
+
+```bash
+npm run desktop:dist:win
+```
+
+Installer output: `desktop/dist/Moneyyy Setup 1.0.0.exe`. An unpacked build lands in `desktop/dist/win-unpacked/` for testing.
+
+### How it works
+
+- `desktop/src/main/index.ts` — creates the BrowserWindow, registers the `app://` protocol that serves `frontend/dist`, and injects permissive CORS headers so renderer API calls reach the hosted backend.
+- `desktop/src/preload/index.ts` — minimal contextBridge API.
+- The packaged app ships `frontend/dist` into `resources/renderer` via `extraResources`.
+- The packaged backend serves `app://desktop/index.html`; the React app uses `VITE_API_URL=https://moneyyy-backend.onrender.com` from `.env.production` for API calls.
+
+> Local development backend: `npm run dev` at root still runs the full stack (Express + FastAPI + Vite) — the Electron wrapper is independent of that.
+
 ## Environment Variables
 
 Copy `.env.example` files in `backend/` and `frontend/`, then fill in your values.

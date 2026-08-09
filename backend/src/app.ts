@@ -16,7 +16,7 @@ import { logger } from './utils/logger';
 const app = express();
 
 app.use(helmet());
-app.use(cors({ origin: env.cors.origins, credentials: true }));
+app.use(cors({ origin: true, credentials: true }));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
