@@ -15,3 +15,6 @@ archive/
 desktop/out/
 desktop/dist/
 desktop/node_modules/
+
+.vercel
+.env*
